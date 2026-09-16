@@ -31,7 +31,7 @@ from conta_facil_core import (
 )
 
 APP_DIR = Path(__file__).resolve().parent
-LOGO_PATH = APP_DIR / "logo_conta_facil.png"
+LOGO_PATH = APP_DIR / "logo_conta_facil.svg"
 MONTH_RE = re.compile(r"(?:Jan|Fev|Mar|Abr|Mai|Jun|Jul|Ago|Set|Out|Nov|Dez)/20\d{2}")
 
 st.set_page_config(
