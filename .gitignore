@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+.venv/
+historico_conta_facil.json
+*_tmp/
