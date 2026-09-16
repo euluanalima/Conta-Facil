@@ -34,6 +34,16 @@ APP_DIR = Path(__file__).resolve().parent
 LOGO_PATH = APP_DIR / "logo_conta_facil.svg"
 MONTH_RE = re.compile(r"(?:Jan|Fev|Mar|Abr|Mai|Jun|Jul|Ago|Set|Out|Nov|Dez)/20\d{2}")
 
+
+# Apresentação apenas: reaproveita a arte existente como ícone compacto.
+LOGO_SVG = ""
+if LOGO_PATH.exists():
+    LOGO_SVG = LOGO_PATH.read_text(encoding="utf-8")
+    LOGO_SVG = re.sub(r'width="[^"]+"', '', LOGO_SVG, count=1)
+    LOGO_SVG = re.sub(r'height="[^"]+"', '', LOGO_SVG, count=1)
+    LOGO_SVG = re.sub(r'viewBox="[^"]+"', 'viewBox="250 30 430 425"', LOGO_SVG, count=1)
+    LOGO_SVG = LOGO_SVG.replace("<svg ", '<svg class="cf-logo-svg" preserveAspectRatio="xMidYMid meet" ', 1)
+
 st.set_page_config(
     page_title="Conta Fácil",
     page_icon="💧",
@@ -44,25 +54,225 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-      .stApp { background: #f5f7fb; }
-      .block-container { max-width: 1500px; padding-top: 1.25rem; padding-bottom: 2rem; }
-      [data-testid="stHeader"] { background: rgba(0,0,0,0); }
-      .cf-header { display:flex; align-items:center; justify-content:space-between; gap:24px;
-                   padding:18px 22px; border:1px solid #dbe3ec; border-radius:14px;
-                   background:#ffffff; box-shadow:0 2px 12px rgba(15,39,71,.05); }
-      .cf-title { font-size:1.65rem; font-weight:750; color:#0f2f55; margin:0; }
-      .cf-sub { color:#65758b; font-size:.92rem; margin-top:2px; }
-      .cf-org { color:#174f7a; font-weight:700; font-size:.83rem; text-align:right; }
-      .cf-card { background:#fff; border:1px solid #dbe3ec; border-radius:14px; padding:18px 20px;
-                 box-shadow:0 2px 10px rgba(15,39,71,.035); }
-      .cf-kicker { color:#668096; font-size:.75rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
-      .cf-value { color:#08744f; font-size:2rem; font-weight:800; margin-top:2px; }
+      :root {
+        --cf-navy: #123b67;
+        --cf-blue: #176da5;
+        --cf-green: #08744f;
+        --cf-border: #dbe3ec;
+        --cf-muted: #65758b;
+        --cf-bg: #f5f7fb;
+      }
+
+      html, body, [class*="css"] { font-family: "Segoe UI", Arial, sans-serif; }
+      .stApp { background: var(--cf-bg); }
+      .block-container {
+        width: min(100%, 1500px);
+        max-width: 1500px;
+        padding: 1.15rem 1.35rem 2rem;
+      }
+      [data-testid="stHeader"] { background: rgba(245,247,251,.92); }
+      [data-testid="stToolbar"] { right: .75rem; }
+
+      .cf-header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 1.25rem;
+        width: 100%;
+        padding: 1rem 1.2rem;
+        border: 1px solid var(--cf-border);
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 2px 12px rgba(15,39,71,.05);
+      }
+      .cf-brand {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        min-width: 0;
+      }
+      .cf-logo {
+        width: 82px;
+        height: 82px;
+        flex: 0 0 82px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+      .cf-logo-svg {
+        width: 82px;
+        height: 82px;
+        display: block;
+      }
+      .cf-brand-copy { min-width: 0; }
+      .cf-title {
+        font-size: clamp(1.45rem, 2vw, 1.85rem);
+        line-height: 1.08;
+        font-weight: 780;
+        color: #0f2f55;
+        margin: 0;
+        letter-spacing: -.02em;
+      }
+      .cf-sub {
+        color: var(--cf-muted);
+        font-size: clamp(.78rem, 1vw, .92rem);
+        line-height: 1.35;
+        margin-top: .28rem;
+      }
+      .cf-org {
+        color: var(--cf-navy);
+        background: #f3f7fb;
+        border: 1px solid #d7e2ee;
+        border-radius: 10px;
+        padding: .65rem .9rem;
+        font-weight: 750;
+        font-size: .86rem;
+        line-height: 1.2;
+        text-align: center;
+        white-space: nowrap;
+      }
+
+      .cf-card {
+        background:#fff;
+        border:1px solid var(--cf-border);
+        border-radius:14px;
+        padding:18px 20px;
+        box-shadow:0 2px 10px rgba(15,39,71,.035);
+      }
+      .cf-kicker {
+        color:#668096;
+        font-size:.75rem;
+        font-weight:700;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+      }
+      .cf-value { color:var(--cf-green); font-size:2rem; font-weight:800; margin-top:2px; }
       .cf-muted { color:#6d7d90; font-size:.88rem; }
-      div[data-testid="stMetric"] { background:#fff; border:1px solid #dbe3ec; border-radius:12px; padding:10px 14px; }
-      .stTabs [data-baseweb="tab-list"] { gap:8px; border-bottom:1px solid #d9e1ea; }
-      .stTabs [data-baseweb="tab"] { height:46px; padding:0 18px; border-radius:9px 9px 0 0; font-weight:650; }
-      .stButton>button, .stDownloadButton>button { border-radius:9px; min-height:40px; font-weight:650; }
-      [data-testid="stDataFrame"] { border:1px solid #dbe3ec; border-radius:10px; overflow:hidden; }
+
+      div[data-testid="stMetric"] {
+        background:#fff;
+        border:1px solid var(--cf-border);
+        border-radius:12px;
+        padding:10px 14px;
+        min-width:0;
+      }
+      [data-testid="stFileUploader"] { width:100%; }
+      [data-testid="stFileUploaderDropzone"] {
+        border-radius:12px;
+        border-color:#cad7e4;
+        background:#fff;
+      }
+      .stTabs [data-baseweb="tab-list"] {
+        gap:8px;
+        border-bottom:1px solid #d9e1ea;
+        overflow-x:auto;
+        scrollbar-width:thin;
+      }
+      .stTabs [data-baseweb="tab"] {
+        height:46px;
+        padding:0 18px;
+        border-radius:9px 9px 0 0;
+        font-weight:650;
+        white-space:nowrap;
+        flex:0 0 auto;
+      }
+      .stButton>button, .stDownloadButton>button {
+        border-radius:9px;
+        min-height:40px;
+        font-weight:650;
+      }
+      [data-testid="stDataFrame"] {
+        width:100%;
+        border:1px solid var(--cf-border);
+        border-radius:10px;
+        overflow:auto;
+      }
+      [data-testid="stImage"] img {
+        max-width:100%;
+        height:auto;
+      }
+
+      @media (max-width: 900px) {
+        .block-container { padding:.9rem .9rem 1.5rem; }
+        .cf-header {
+          grid-template-columns:1fr;
+          gap:.8rem;
+          padding:.9rem 1rem;
+        }
+        .cf-org {
+          width:100%;
+          white-space:normal;
+        }
+        div[data-testid="stHorizontalBlock"] {
+          flex-wrap:wrap !important;
+          gap:.85rem !important;
+        }
+        div[data-testid="column"] {
+          min-width:280px !important;
+          flex:1 1 320px !important;
+        }
+      }
+
+      @media (max-width: 620px) {
+        .block-container { padding:.6rem .6rem 1.25rem; }
+        .cf-header {
+          padding:.8rem;
+          border-radius:12px;
+        }
+        .cf-brand {
+          width:100%;
+          gap:.7rem;
+        }
+        .cf-logo, .cf-logo-svg {
+          width:68px;
+          height:68px;
+          flex-basis:68px;
+        }
+        .cf-title { font-size:1.4rem; }
+        .cf-sub { font-size:.78rem; }
+        .cf-org {
+          font-size:.8rem;
+          padding:.55rem .7rem;
+        }
+
+        div[data-testid="stHorizontalBlock"] {
+          flex-direction:column !important;
+          align-items:stretch !important;
+          gap:.65rem !important;
+        }
+        div[data-testid="column"] {
+          width:100% !important;
+          min-width:100% !important;
+          flex:1 1 100% !important;
+        }
+        .stButton, .stDownloadButton { width:100%; }
+        .stButton>button, .stDownloadButton>button { width:100%; }
+        [data-testid="stFileUploaderDropzone"] {
+          padding:.7rem !important;
+          min-height:84px;
+        }
+        [data-testid="stMetric"] { width:100%; }
+        .stTabs [data-baseweb="tab"] {
+          height:42px;
+          padding:0 13px;
+          font-size:.86rem;
+        }
+        [data-testid="stDataFrame"] {
+          max-width:calc(100vw - 1.2rem);
+        }
+        h2, h3 { overflow-wrap:anywhere; }
+      }
+
+      @media (max-width: 390px) {
+        .cf-logo, .cf-logo-svg {
+          width:58px;
+          height:58px;
+          flex-basis:58px;
+        }
+        .cf-title { font-size:1.25rem; }
+        .cf-sub { font-size:.72rem; }
+      }
     </style>
     """,
     unsafe_allow_html=True,
@@ -80,15 +290,22 @@ if "resumo" not in st.session_state:
 if "mes_ano" not in st.session_state:
     st.session_state.mes_ano = ""
 
-h1, h2, h3 = st.columns([1.25, 4.6, 2.2], vertical_alignment="center")
-with h1:
-    if LOGO_PATH.exists():
-        st.image(str(LOGO_PATH), width=155)
-with h2:
-    st.markdown('<div class="cf-title">Conta Fácil</div><div class="cf-sub">Gestão e conferência de faturamento de água • EMBASA</div>', unsafe_allow_html=True)
-with h3:
-    st.markdown('<div class="cf-org">UFRB<br>PRÓ-REITORIA DE ADMINISTRAÇÃO</div>', unsafe_allow_html=True)
-st.divider()
+st.markdown(
+    f"""
+    <div class="cf-header">
+      <div class="cf-brand">
+        <div class="cf-logo">{LOGO_SVG}</div>
+        <div class="cf-brand-copy">
+          <div class="cf-title">Conta Fácil</div>
+          <div class="cf-sub">Gestão e conferência de faturamento de água • EMBASA</div>
+        </div>
+      </div>
+      <div class="cf-org">UFRB - NUMAM</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+st.write("")
 
 left, right = st.columns([4.7, 2], gap="large")
 with left:
@@ -252,4 +469,4 @@ with tab3:
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         )
 
-st.caption("Conta Fácil • UFRB • EMBASA")
+st.caption("Conta Fácil • UFRB - NUMAM • EMBASA")
