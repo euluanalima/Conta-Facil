@@ -41,7 +41,7 @@ if LOGO_PATH.exists():
     LOGO_SVG = LOGO_PATH.read_text(encoding="utf-8")
     LOGO_SVG = re.sub(r'width="[^"]+"', '', LOGO_SVG, count=1)
     LOGO_SVG = re.sub(r'height="[^"]+"', '', LOGO_SVG, count=1)
-    LOGO_SVG = re.sub(r'viewBox="[^"]+"', 'viewBox="250 30 430 425"', LOGO_SVG, count=1)
+    LOGO_SVG = re.sub(r'viewBox="[^"]+"', 'viewBox="250 45 430 400"', LOGO_SVG, count=1)
     LOGO_SVG = LOGO_SVG.replace("<svg ", '<svg class="cf-logo-svg" preserveAspectRatio="xMidYMid meet" ', 1)
 
 st.set_page_config(
@@ -157,7 +157,9 @@ st.markdown(
         padding:10px 14px;
         min-width:0;
       }
-      [data-testid="stFileUploader"] { width:100%; }
+      [data-testid="stFileUploader"] { width:100%; min-width:0; }
+      div[data-testid="stColumn"] { min-width:0; }
+      div[data-testid="stHorizontalBlock"] { width:100%; align-items:stretch; }
       [data-testid="stFileUploaderDropzone"] {
         border-radius:12px;
         border-color:#cad7e4;
@@ -193,11 +195,15 @@ st.markdown(
         height:auto;
       }
 
-      @media (max-width: 900px) {
-        .block-container { padding:.9rem .9rem 1.5rem; }
+      @media (max-width: 980px) {
+        .block-container {
+          width:100%;
+          max-width:100%;
+          padding:.85rem .8rem 1.5rem;
+        }
         .cf-header {
           grid-template-columns:1fr;
-          gap:.8rem;
+          gap:.75rem;
           padding:.9rem 1rem;
         }
         .cf-org {
@@ -205,12 +211,20 @@ st.markdown(
           white-space:normal;
         }
         div[data-testid="stHorizontalBlock"] {
-          flex-wrap:wrap !important;
-          gap:.85rem !important;
+          display:flex !important;
+          flex-direction:column !important;
+          align-items:stretch !important;
+          gap:.75rem !important;
+          width:100% !important;
         }
-        div[data-testid="column"] {
-          min-width:280px !important;
-          flex:1 1 320px !important;
+        div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {
+          width:100% !important;
+          min-width:0 !important;
+          max-width:100% !important;
+          flex:1 1 100% !important;
+        }
+        div[data-testid="stMetric"] {
+          width:100% !important;
         }
       }
 
@@ -223,6 +237,11 @@ st.markdown(
         .cf-brand {
           width:100%;
           gap:.7rem;
+          align-items:center;
+        }
+        .cf-brand-copy {
+          width:calc(100% - 76px);
+          min-width:0;
         }
         .cf-logo, .cf-logo-svg {
           width:68px;
@@ -237,13 +256,16 @@ st.markdown(
         }
 
         div[data-testid="stHorizontalBlock"] {
+          display:flex !important;
           flex-direction:column !important;
           align-items:stretch !important;
-          gap:.65rem !important;
-        }
-        div[data-testid="column"] {
+          gap:.6rem !important;
           width:100% !important;
-          min-width:100% !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {
+          width:100% !important;
+          min-width:0 !important;
+          max-width:100% !important;
           flex:1 1 100% !important;
         }
         .stButton, .stDownloadButton { width:100%; }
