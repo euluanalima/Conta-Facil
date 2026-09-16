@@ -35,13 +35,10 @@ LOGO_PATH = APP_DIR / "logo_conta_facil.svg"
 MONTH_RE = re.compile(r"(?:Jan|Fev|Mar|Abr|Mai|Jun|Jul|Ago|Set|Out|Nov|Dez)/20\d{2}")
 
 
-# Apresentação apenas: reaproveita a arte existente como ícone compacto.
+# Apresentação apenas: carrega o ícone visual da aplicação.
 LOGO_SVG = ""
 if LOGO_PATH.exists():
     LOGO_SVG = LOGO_PATH.read_text(encoding="utf-8")
-    LOGO_SVG = re.sub(r'width="[^"]+"', '', LOGO_SVG, count=1)
-    LOGO_SVG = re.sub(r'height="[^"]+"', '', LOGO_SVG, count=1)
-    LOGO_SVG = re.sub(r'viewBox="[^"]+"', 'viewBox="250 45 430 400"', LOGO_SVG, count=1)
     LOGO_SVG = LOGO_SVG.replace("<svg ", '<svg class="cf-logo-svg" preserveAspectRatio="xMidYMid meet" ', 1)
 
 st.set_page_config(
@@ -92,17 +89,17 @@ st.markdown(
         min-width: 0;
       }
       .cf-logo {
-        width: 82px;
-        height: 82px;
-        flex: 0 0 82px;
+        width: 72px;
+        height: 72px;
+        flex: 0 0 72px;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
       }
       .cf-logo-svg {
-        width: 82px;
-        height: 82px;
+        width: 72px;
+        height: 72px;
         display: block;
       }
       .cf-brand-copy { min-width: 0; }
@@ -240,13 +237,13 @@ st.markdown(
           align-items:center;
         }
         .cf-brand-copy {
-          width:calc(100% - 76px);
+          width:calc(100% - 68px);
           min-width:0;
         }
         .cf-logo, .cf-logo-svg {
-          width:68px;
-          height:68px;
-          flex-basis:68px;
+          width:60px;
+          height:60px;
+          flex-basis:60px;
         }
         .cf-title { font-size:1.4rem; }
         .cf-sub { font-size:.78rem; }
@@ -288,9 +285,9 @@ st.markdown(
 
       @media (max-width: 390px) {
         .cf-logo, .cf-logo-svg {
-          width:58px;
-          height:58px;
-          flex-basis:58px;
+          width:54px;
+          height:54px;
+          flex-basis:54px;
         }
         .cf-title { font-size:1.25rem; }
         .cf-sub { font-size:.72rem; }
@@ -338,9 +335,11 @@ with right:
     total = 0
     if st.session_state.faturas is not None and not st.session_state.faturas.empty:
         total = int(st.session_state.faturas["Valor_Centavos"].sum())
-    st.metric("Valor total geral", brl(total))
+    total_slot = st.empty()
+    reference_slot = st.empty()
+    total_slot.metric("Valor total geral", brl(total))
     if st.session_state.mes_ano:
-        st.caption(f"Referência: {st.session_state.mes_ano}")
+        reference_slot.caption(f"Referência: {st.session_state.mes_ano}")
 
 history_file = st.file_uploader(
     "Carregar histórico Excel (opcional)",
@@ -383,6 +382,8 @@ if process and pdf_file is not None:
             st.session_state.control = control
             st.session_state.resumo = resumo
             st.session_state.mes_ano = mes_ano
+        total_slot.metric("Valor total geral", brl(int(faturas["Valor_Centavos"].sum())))
+        reference_slot.caption(f"Referência: {mes_ano}")
         st.success(f"{len(faturas)} faturas processadas • Referência {mes_ano} • Total {brl(int(faturas['Valor_Centavos'].sum()))}")
     except Exception as exc:
         st.error(f"Erro ao processar o PDF: {exc}")
