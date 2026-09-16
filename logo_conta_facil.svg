@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0F5F9C"/>
+      <stop offset="1" stop-color="#123B67"/>
+    </linearGradient>
+  </defs>
+  <rect width="900" height="520" rx="36" fill="#ffffff"/>
+  <g transform="translate(260,40)">
+    <path d="M120 20h190l80 80v220c0 22-18 40-40 40H120c-22 0-40-18-40-40V60c0-22 18-40 40-40z" fill="none" stroke="#123B67" stroke-width="18" stroke-linejoin="round"/>
+    <path d="M310 20v85h80" fill="#DCEBFA" stroke="#123B67" stroke-width="18" stroke-linejoin="round"/>
+    <rect x="210" y="210" width="34" height="90" rx="6" fill="#0F5F9C"/>
+    <rect x="262" y="175" width="34" height="125" rx="6" fill="#0F5F9C"/>
+    <rect x="314" y="140" width="34" height="160" rx="6" fill="#0F5F9C"/>
+    <path d="M82 140C42 204 5 250 5 302c0 58 47 105 105 105s105-47 105-105c0-49-37-98-82-162-12-17-23-35-31-52-5 17-12 34-20 52z" fill="url(#g)"/>
+    <path d="M92 164c-18 50-52 92-52 140 0 35 20 66 50 81-24-34-20-76 7-128 14-28 24-59 25-89-9 4-19 3-30-4z" fill="#ffffff" opacity=".95"/>
+  </g>
+  <text x="450" y="455" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="72" font-weight="800" fill="#123B67">Conta <tspan fill="#1786C7">Fácil</tspan></text>
+  <text x="450" y="495" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="24" letter-spacing="4" fill="#345774">GESTÃO DE FATURAS DE ÁGUA</text>
+</svg>
