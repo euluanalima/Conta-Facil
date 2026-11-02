@@ -397,13 +397,28 @@ if control is None or faturas is None or resumo is None or not mes_ano:
     st.info("Envie e processe um PDF para habilitar a planilha, os gráficos e o relatório.")
     st.stop()
 
-def display_control(df: pd.DataFrame) -> pd.DataFrame:
+def display_control(df: pd.DataFrame, *, is_filtered: bool = False) -> pd.DataFrame:
+    """Prepara a tabela visual e soma cada competência sem alterar o controle original."""
     out = df.copy()
+    month_cols = [c for c in out.columns if MONTH_RE.fullmatch(str(c))]
+
+    if not out.empty:
+        # Somar em centavos inteiros; meses totalmente ausentes continuam vazios.
+        total_row = {c: None for c in out.columns}
+        total_row["LOCAL"] = "TOTAL FILTRADO" if is_filtered else "TOTAL GERAL"
+        for c in month_cols:
+            total = pd.to_numeric(df[c], errors="coerce").sum(min_count=1)
+            total_row[c] = None if pd.isna(total) else int(total)
+        out = pd.concat([out, pd.DataFrame([total_row])], ignore_index=True)
+
     for c in out.columns:
         if MONTH_RE.fullmatch(str(c)):
             out[c] = out[c].apply(lambda x: "" if pd.isna(x) else brl(int(x)))
         elif c in {"Aum / Red", "% Centro", "% Total", "Variação %"}:
             out[c] = out[c].apply(pct)
+        elif c == "Nº G":
+            # A linha de total não tem número de matrícula/ordem.
+            out[c] = out[c].apply(lambda x: "" if pd.isna(x) else str(int(x)))
     return out
 
 tab1, tab2, tab3 = st.tabs(["Planilha de Controle", "Gráficos Analíticos", "Relatório de Ateste"])
@@ -423,7 +438,18 @@ with tab1:
     with b:
         st.metric("Contas exibidas", f"{len(filtered)} / {len(control)}")
 
-    st.dataframe(display_control(filtered), use_container_width=True, hide_index=True, height=520)
+    display_df = display_control(filtered, is_filtered=bool(query.strip()))
+    if not filtered.empty:
+        # Destaca a última linha para identificar os totais mensais.
+        last_row = display_df.index[-1]
+        display_df = display_df.style.apply(
+            lambda row: (
+                ["background-color: #FFF2CC; font-weight: bold"] * len(row)
+                if row.name == last_row else [""] * len(row)
+            ),
+            axis=1,
+        )
+    st.dataframe(display_df, use_container_width=True, hide_index=True, height=520)
 
     with tempfile.NamedTemporaryFile(suffix=".xlsx", delete=False) as tmp:
         excel_path = tmp.name
