@@ -10,6 +10,11 @@ O projeto está preparado para publicação no Streamlit Community Cloud.
 - Dependências: `requirements.txt`
 - Configuração visual do Streamlit: `.streamlit/config.toml`
 
+## Equipe
+
+- **Luana Lima Sena** — [@euluanalima](https://github.com/euluanalima)
+- **Renatta de Andrade Correia** — [@renattaandrade](https://github.com/renattaandrade)
+
 ## Funcionalidades
 - upload do PDF consolidado da EMBASA;
 - extração das faturas por matrícula;
